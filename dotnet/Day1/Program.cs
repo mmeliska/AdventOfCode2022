@@ -4,7 +4,7 @@ string content = File.ReadAllText("input.txt");
 
 var elfTotals = content.Split("\n\n")
     .Select(elf => elf.Split('\n')
-        .Select(Int32.Parse)
+        .Select(int.Parse)
         .Sum()
     );
 
