@@ -1,7 +1,3 @@
-using System.Drawing;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Day8;
@@ -55,7 +51,7 @@ public class Forest
 
         return trees;
     }
-
+    
     public override string ToString()
     {
         var result = new StringBuilder();

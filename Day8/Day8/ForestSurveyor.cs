@@ -7,29 +7,31 @@ public class ForestSurveyor
     public ForestSurveyor(Forest forest)
     {
         _forest = forest;
-        ProcessTreeVisibility();
+        ProcessTree();
     }
 
-    private void ProcessTreeVisibility()
+    private void ProcessTree()
     {
         for (int rowIndex = 0; rowIndex < _forest.RowCount; rowIndex++)
         {
             for (int colIndex = 0; colIndex < _forest.ColumnCount; colIndex++)
             {
                 Tree northAndEastTree = _forest.GetTreeAtLocation(rowIndex, colIndex);
-                ProcessTree(northAndEastTree, Direction.East, Direction.West);
-                ProcessTree(northAndEastTree, Direction.North, Direction.South);
-                
-                Tree westTree = _forest.GetTreeAtLocation(rowIndex, _forest.ColumnCount - colIndex -1);
-                ProcessTree(westTree, Direction.West, Direction.East);
-                
+                ProcessTreeVisibility(northAndEastTree, Direction.East, Direction.West);
+                ProcessTreeVisibility(northAndEastTree, Direction.North, Direction.South);
+
+                Tree westTree = _forest.GetTreeAtLocation(rowIndex, _forest.ColumnCount - colIndex - 1);
+                ProcessTreeVisibility(westTree, Direction.West, Direction.East);
+
                 Tree southTree = _forest.GetTreeAtLocation(_forest.RowCount - rowIndex - 1, colIndex);
-                ProcessTree(southTree, Direction.South, Direction.North);
+                ProcessTreeVisibility(southTree, Direction.South, Direction.North);
+
+                CalculateScenicScore(northAndEastTree);
             }
         }
     }
-    
-    private void ProcessTree(Tree tree, Direction direction, Direction oppositeDirection)
+
+    private void ProcessTreeVisibility(Tree tree, Direction direction, Direction oppositeDirection)
     {
         var neighborTree = _forest.GetNeighboringTree(tree, direction);
         if (neighborTree != null)
@@ -49,6 +51,31 @@ public class ForestSurveyor
         }
     }
 
+    private void CalculateScenicScore(Tree tree)
+    {
+        tree.ScenicScores[Direction.North] = CalculateScenicScoreForDirection(tree, Direction.North);
+        tree.ScenicScores[Direction.East] = CalculateScenicScoreForDirection(tree, Direction.East);
+        tree.ScenicScores[Direction.South] = CalculateScenicScoreForDirection(tree, Direction.South);
+        tree.ScenicScores[Direction.West] = CalculateScenicScoreForDirection(tree, Direction.West);
+    }
+
+    private int CalculateScenicScoreForDirection(Tree tree, Direction direction)
+    {
+        int counter = 0;
+        Tree? neighbor = _forest.GetNeighboringTree(tree, direction);
+        while (neighbor != null)
+        {
+            counter++;
+            if (neighbor.Height >= tree.Height)
+            {
+                break;
+            }
+            neighbor = _forest.GetNeighboringTree(neighbor, direction);
+        }
+        
+        return counter;
+    }
+
 
     public int CountVisibleTrees()
     {
@@ -65,5 +92,26 @@ public class ForestSurveyor
         }
 
         return counter;
+    }
+
+    public (int Score, Location Location) FindBestView()
+    {
+        int max = 0;
+        Location location = new Location(-1, -1);
+        for (int rowIndex = 0; rowIndex < _forest.RowCount; rowIndex++)
+        {
+            for (int colIndex = 0; colIndex < _forest.ColumnCount; colIndex++)
+            {
+                var tree = _forest.GetTreeAtLocation(rowIndex, colIndex);
+                var score = tree.OverallScenicScore;
+                if (score > max)
+                {
+                    max = score;
+                    location = tree.Location;
+                }
+            }
+        }
+
+        return (max, location);
     }
 }

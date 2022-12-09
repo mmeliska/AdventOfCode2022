@@ -12,4 +12,9 @@ public class Location
         Row = row;
         Column = column;
     }
+
+    public override string ToString()
+    {
+        return $"[{Row},{Column}]";
+    }
 }
