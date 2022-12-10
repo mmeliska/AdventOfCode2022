@@ -1,11 +1,22 @@
-﻿using System.Drawing;
-using Day9;
+﻿using Day9;
 
 var fileContents = File.ReadAllLines("input.txt");
 
+// Part 1
 Knot head = new Knot();
-Knot tail = new Knot();
-HashSet<Point> visitedPoints = new HashSet<Point>();
+Knot tail = head.AttachKnot();
+
+// Part 2
+var head2 = new Knot();
+var tail2 = head2.AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot()
+    .AttachKnot();
 
 foreach(var line in fileContents)
 {
@@ -24,12 +35,15 @@ foreach(var line in fileContents)
     for (int i = 0; i < count; i++)
     {
         head.Move(direction);
-        tail.FollowPosition(head.Position);
-        visitedPoints.Add(tail.Position);
-        Console.WriteLine($"H:{head.Position}, T:{tail.Position}");
+        head2.Move(direction);
     }
 }
 
-Console.WriteLine("Total Tail Positions: " +visitedPoints.Count);
+Console.WriteLine("Total Tail Positions for Part 1: " +tail.VisitedPoints.Count);
+Console.WriteLine("Total Tail Positions for Part 2: " +tail2.VisitedPoints.Count);
+
+
+
+
 
 

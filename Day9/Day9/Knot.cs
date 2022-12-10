@@ -13,9 +13,26 @@ public class Knot
         set => _position = value;
     }
     
+    public HashSet<Point> VisitedPoints = new HashSet<Point>();
+
+    public Knot? AttachedKnot { get; private set; }
+    
     public Knot()
     {
         Position = Point.Empty;
+        VisitedPoints.Add(_position);
+    }
+    
+    private Knot(Point initialPosition)
+    {
+        Position = initialPosition;
+        VisitedPoints.Add(_position);
+    }
+
+    public Knot AttachKnot()
+    {
+        this.AttachedKnot = new Knot(this.Position);
+        return this.AttachedKnot;
     }
 
     public void Move(Direction direction)
@@ -35,6 +52,11 @@ public class Knot
                 _position.Offset(-1, 0);
                 break;
         };
+        VisitedPoints.Add(_position);
+        if (this.AttachedKnot != null)
+        {
+            this.AttachedKnot.FollowPosition(this._position);
+        }
     }
 
     public void FollowPosition(Point other)
@@ -42,7 +64,10 @@ public class Knot
         if (!AreTouching(this.Position, other))
         {
             MoveToTouchPoint(other);
-            
+            if (this.AttachedKnot != null)
+            {
+                this.AttachedKnot.FollowPosition(this._position);
+            }
         }
     }
 
@@ -78,5 +103,6 @@ public class Knot
         };
         
         _position.Offset(offset);
+        VisitedPoints.Add(_position);
     }
 }
